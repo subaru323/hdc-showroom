@@ -1,0 +1,24 @@
+# 大容量3Dモデルファイル
+*.glb
+*.gltf
+assets/models/*.glb
+assets/models/*.gltf
+
+# Node.js
+node_modules/
+npm-debug.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# エディタ
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 一時ファイル
+*.tmp
+*.bak
