@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>HDC大阪 仮想ショールーム</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="info">モード: 配置</div>
+  <div id="center-cursor"></div>
+  
+  <!-- ギャラリーモーダル -->
+  <div id="gallery-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">家具を選択</h2>
+        <span class="close">&times;</span>
+      </div>
+      <div id="gallery-grid" class="gallery-grid">
+        <!-- JavaScriptで動的生成 -->
+      </div>
+    </div>
+  </div>
+  
+  <a-scene>
+    <a-plane id="floor"
+             position="0 0 0" 
+             rotation="-90 0 0" 
+             width="20" 
+             height="20" 
+             color="#3A3A3A"></a-plane>
+    
+    <a-plane position="0 3 -10" width="20" height="6" color="#F5F5F0"></a-plane>
+    <a-plane position="-10 3 0" rotation="0 90 0" width="20" height="6" color="#F5F5F0"></a-plane>
+    <a-plane position="10 3 0" rotation="0 -90 0" width="20" height="6" color="#F5F5F0"></a-plane>
+    <a-plane position="0 3 10" rotation="0 180 0" width="20" height="6" color="#F5F5F0"></a-plane>
+    
+    <a-light type="ambient" intensity="0.5"></a-light>
+    <a-light type="directional" intensity="0.8" position="5 6 3"></a-light>
+    
+    <a-ring id="pointer" 
+            radius-inner="0.15"
+            radius-outer="0.25" 
+            rotation="-90 0 0" 
+            position="0 0.02 -3"
+            color="#00FF00"
+            opacity="0.8"></a-ring>
+    
+    <a-camera id="camera" position="0 1.6 5"></a-camera>
+  </a-scene>
+
+  <div id="furniture-menu">
+    <button class="furniture-btn" onclick="openGallery('sofa')">🛋️ ソファ</button>
+    <button class="furniture-btn" onclick="openGallery('table')">🪑 テーブル</button>
+    <button class="furniture-btn" onclick="openGallery('kitchen')">🔪 キッチン</button>
+    <button class="furniture-btn" onclick="openGallery('cabinet')">📦 棚</button>
+    <button class="furniture-btn" onclick="openGallery('chair')">🪑 椅子</button>
+    <button id="place-btn" class="furniture-btn" onclick="placeFurniture()">📍 配置</button>
+    <button id="rotate-btn" class="furniture-btn" onclick="toggleRotateMode()">🔄 回転</button>
+    <button id="delete-btn" class="furniture-btn" onclick="toggleDeleteMode()">🗑️ 削除</button>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HDC大阪 - 仮想ショールーム</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <link rel="stylesheet" href="css/catalog.css">
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="header-content">
+      <h1 class="logo">HDC OSAKA</h1>
+      <nav class="nav">
+        <a href="#furniture">家具一覧</a>
+        <a href="simulator.html" class="cta-button">配置シミュレーション</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ヒーローセクション -->
+  <section class="hero">
+    <div class="hero-content">
+      <h2 class="hero-title">理想の空間を、<br>バーチャルで体験。</h2>
+      <p class="hero-description">HDC大阪の家具を3Dで閲覧し、あなただけの部屋をデザインしましょう。</p>
+      <a href="simulator.html" class="hero-button">配置シミュレーションを開始</a>
+    </div>
+  </section>
+
+  <!-- 家具カテゴリセクション -->
+  <section id="furniture" class="furniture-section">
+    <div class="container">
+      <h2 class="section-title">家具カテゴリ</h2>
+      <div class="category-grid">
+        
+        <!-- ソファ -->
+        <div class="category-card" data-category="sofa">
+          <div class="category-image">
+            <div id="viewer-sofa" class="model-viewer"></div>
+          </div>
+          <h3 class="category-name">ソファ</h3>
+          <p class="category-description">快適な座り心地と洗練されたデザイン</p>
+          <button class="view-button" onclick="openCategoryDetail('sofa')">詳細を見る</button>
+        </div>
+
+        <!-- テーブル -->
+        <div class="category-card" data-category="table">
+          <div class="category-image">
+            <div id="viewer-table" class="model-viewer"></div>
+          </div>
+          <h3 class="category-name">テーブル</h3>
+          <p class="category-description">多様なスタイルに対応する機能美</p>
+          <button class="view-button" onclick="openCategoryDetail('table')">詳細を見る</button>
+        </div>
+
+        <!-- キッチン -->
+        <div class="category-card" data-category="kitchen">
+          <div class="category-image">
+            <div id="viewer-kitchen" class="model-viewer"></div>
+          </div>
+          <h3 class="category-name">キッチン</h3>
+          <p class="category-description">最新の設備と美しいデザインの融合</p>
+          <button class="view-button" onclick="openCategoryDetail('kitchen')">詳細を見る</button>
+        </div>
+
+        <!-- 棚 -->
+        <div class="category-card" data-category="cabinet">
+          <div class="category-image">
+            <div id="viewer-cabinet" class="model-viewer"></div>
+          </div>
+          <h3 class="category-name">収納棚</h3>
+          <p class="category-description">空間を整える美しい収納ソリューション</p>
+          <button class="view-button" onclick="openCategoryDetail('cabinet')">詳細を見る</button>
+        </div>
+
+        <!-- 椅子 -->
+        <div class="category-card" data-category="chair">
+          <div class="category-image">
+            <div id="viewer-chair" class="model-viewer"></div>
+          </div>
+          <h3 class="category-name">チェア</h3>
+          <p class="category-description">エルゴノミクスと美しさの両立</p>
+          <button class="view-button" onclick="openCategoryDetail('chair')">詳細を見る</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- カテゴリ詳細モーダル -->
+  <div id="category-detail-modal" class="modal">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2 id="detail-title">家具一覧</h2>
+        <span class="close" onclick="closeCategoryDetail()">&times;</span>
+      </div>
+      <div id="detail-grid" class="detail-grid">
+        <!-- JavaScriptで動的生成 -->
+      </div>
+      <div class="modal-footer">
+        <a href="simulator.html" class="simulator-link">これらの家具で部屋を作る →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA（Call To Action）セクション -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2 class="cta-title">あなたの理想の部屋を<br>デザインしてみませんか？</h2>
+      <a href="simulator.html" class="cta-button-large">配置シミュレーションを開始</a>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2025 HDC大阪 仮想ショールーム. All rights reserved.</p>
+      <p class="footer-link"><a href="https://hdc.asahi.co.jp/osaka/" target="_blank">HDC大阪 公式サイト</a></p>
+    </div>
+  </footer>
+
+  <script src="js/catalog.js"></script>
+</body>
+</html>
