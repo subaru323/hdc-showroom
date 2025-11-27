@@ -1,8 +1,5 @@
 # 大容量3Dモデルファイル
-*.glb
-*.gltf
-assets/models/*.glb
-assets/models/*.gltf
+# GLBファイルを一時的に許可
 
 # Node.js
 node_modules/
