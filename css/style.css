@@ -94,6 +94,37 @@
   top: 14px;
 }
 
+/* 回転コントロールボタン */
+.rotate-control-btn {
+  position: fixed;
+  top: 80px;
+  background: rgba(33, 150, 243, 0.9);
+  color: white;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  padding: 15px 20px;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s;
+  user-select: none;
+}
+
+.rotate-control-btn:active {
+  transform: scale(0.95);
+  background: rgba(33, 150, 243, 1);
+}
+
+#rotate-left-btn {
+  left: 20px;
+}
+
+#rotate-right-btn {
+  right: 20px;
+}
+
 /* ギャラリーモーダル */
 .modal {
   display: none;
@@ -203,4 +234,64 @@
   color: white;
   margin: 0;
   font-size: 14px;
+}
+
+/* バーチャルジョイスティック */
+#joystick-container {
+  position: fixed;
+  bottom: 280px;
+  left: 30px;
+  width: 120px;
+  height: 120px;
+  z-index: 1001;
+  display: none; /* デフォルトで非表示 */
+}
+
+#joystick-base {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+#joystick-stick {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 3px solid rgba(255, 255, 255, 1);
+  border-radius: 50%;
+  left: 35px;
+  top: 35px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.1s;
+  cursor: pointer;
+}
+
+/* スマホでのみ表示 */
+@media (max-width: 768px) {
+  #joystick-container {
+    display: block;
+  }
+  
+  #furniture-menu {
+    flex-wrap: wrap;
+    max-width: 90%;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .furniture-btn {
+    font-size: 16px;
+    padding: 12px 20px;
+    min-width: 80px;
+  }
+  
+  #info {
+    font-size: 12px;
+    padding: 8px 15px;
+  }
 }

@@ -10,12 +10,29 @@
   <div id="info">モード: 配置</div>
   <div id="center-cursor"></div>
   
+  <!-- 回転ボタン -->
+  <button id="rotate-left-btn" class="rotate-control-btn" onclick="rotateFurnitureAtCenter(-45)">◀ L</button>
+  <button id="rotate-right-btn" class="rotate-control-btn" onclick="rotateFurnitureAtCenter(45)">R ▶</button>
+  
+  <!-- カテゴリ選択モーダル -->
+  <div id="category-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>家具カテゴリを選択</h2>
+        <span class="close" onclick="closeCategorySelect()">&times;</span>
+      </div>
+      <div id="category-grid" class="gallery-grid">
+        <!-- JavaScriptで動的生成 -->
+      </div>
+    </div>
+  </div>
+
   <!-- ギャラリーモーダル -->
   <div id="gallery-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h2 id="modal-title">家具を選択</h2>
-        <span class="close">&times;</span>
+        <span class="close" onclick="closeGallery()">&times;</span>
       </div>
       <div id="gallery-grid" class="gallery-grid">
         <!-- JavaScriptで動的生成 -->
@@ -50,12 +67,14 @@
     <a-camera id="camera" position="0 1.6 5"></a-camera>
   </a-scene>
 
+  <!-- バーチャルジョイスティック -->
+  <div id="joystick-container">
+    <div id="joystick-base"></div>
+    <div id="joystick-stick"></div>
+  </div>
+
   <div id="furniture-menu">
-    <button class="furniture-btn" onclick="openGallery('sofa')">🛋️ ソファ</button>
-    <button class="furniture-btn" onclick="openGallery('table')">🪑 テーブル</button>
-    <button class="furniture-btn" onclick="openGallery('kitchen')">🔪 キッチン</button>
-    <button class="furniture-btn" onclick="openGallery('cabinet')">📦 棚</button>
-    <button class="furniture-btn" onclick="openGallery('chair')">🪑 椅子</button>
+    <button class="furniture-btn" onclick="openCategorySelect()">🪑 家具</button>
     <button id="place-btn" class="furniture-btn" onclick="placeFurniture()">📍 配置</button>
     <button id="rotate-btn" class="furniture-btn" onclick="toggleRotateMode()">🔄 回転</button>
     <button id="delete-btn" class="furniture-btn" onclick="toggleDeleteMode()">🗑️ 削除</button>
