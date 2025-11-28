@@ -3,6 +3,7 @@ let selectedVariant = null;
 let furnitureCounter = 0;
 let selectedFurnitureEntity = null; // 選択中の家具エンティティ
 let selectionBox = null; // 選択枠
+let currentRoomBounds = { x: 20, z: 20 }; // 現在の部屋の移動範囲
 
 console.log('スクリプト開始');
 
@@ -486,10 +487,13 @@ setInterval(function() {
   let cameraPos = camera.getAttribute('position');
   let changed = false;
   
-  if (cameraPos.x < -9.5) { cameraPos.x = -9.5; changed = true; }
-  if (cameraPos.x > 9.5) { cameraPos.x = 9.5; changed = true; }
-  if (cameraPos.z < -9.5) { cameraPos.z = -9.5; changed = true; }
-  if (cameraPos.z > 9.5) { cameraPos.z = 9.5; changed = true; }
+  const halfX = currentRoomBounds.x / 2;
+  const halfZ = currentRoomBounds.z / 2;
+  
+  if (cameraPos.x < -halfX) { cameraPos.x = -halfX; changed = true; }
+  if (cameraPos.x > halfX) { cameraPos.x = halfX; changed = true; }
+  if (cameraPos.z < -halfZ) { cameraPos.z = -halfZ; changed = true; }
+  if (cameraPos.z > halfZ) { cameraPos.z = halfZ; changed = true; }
   
   if (changed) camera.setAttribute('position', cameraPos);
   
@@ -598,8 +602,11 @@ function updateCameraFromJoystick() {
   pos.z += forward.z + strafe.z;
   
   // 壁の制限
-  pos.x = Math.max(-9.5, Math.min(9.5, pos.x));
-  pos.z = Math.max(-9.5, Math.min(9.5, pos.z));
+  const halfX = currentRoomBounds.x / 2;
+  const halfZ = currentRoomBounds.z / 2;
+  
+  pos.x = Math.max(-halfX, Math.min(halfX, pos.x));
+  pos.z = Math.max(-halfZ, Math.min(halfZ, pos.z));
   
   camera.setAttribute('position', pos);
 }
@@ -608,6 +615,128 @@ function updateCameraFromJoystick() {
 window.addEventListener('load', () => {
   initJoystick();
   console.log('ジョイスティック初期化完了');
+  
+  // 部屋選択モーダルを表示
+  showRoomSelection();
 });
+
+// 部屋選択機能
+function showRoomSelection() {
+  const modal = document.getElementById('room-selection-modal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function selectRoom(roomName) {
+  console.log('部屋選択:', roomName);
+  
+  // モーダルを閉じる
+  const modal = document.getElementById('room-selection-modal');
+  modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  
+  // A-Frameシーンに部屋をロード
+  loadRoomToScene(roomName);
+}
+
+function loadRoomToScene(roomName) {
+  const scene = document.querySelector('a-scene');
+  
+  // 既存の床と壁を削除
+  const floor = document.getElementById('floor');
+  const walls = document.querySelectorAll('a-plane[color="#F5F5F0"]');
+  const oldRoomModel = document.getElementById('room-model');
+  
+  if (floor) floor.remove();
+  walls.forEach(wall => wall.remove());
+  if (oldRoomModel) oldRoomModel.remove();
+  
+  // 部屋設定
+  let roomConfig;
+  if (roomName === 'standard') {
+    roomConfig = {
+      size: 10,
+      wallColor: '#F5F5F0',
+      floorColor: '#3A3A3A',
+      cameraHeight: 1.6,
+      bounds: { x: 10, z: 10 }
+    };
+  } else if (roomName === 'wide') {
+    roomConfig = {
+      size: 15,
+      wallColor: '#F0E6D2',
+      floorColor: '#8B6F47',
+      cameraHeight: 1.6,
+      bounds: { x: 15, z: 15 }
+    };
+  } else if (roomName === 'compact') {
+    roomConfig = {
+      size: 8,
+      wallColor: '#FFF8E7',
+      floorColor: '#8B7355',
+      cameraHeight: 1.6,
+      bounds: { x: 8, z: 8 }
+    };
+  }
+  
+  const halfSize = roomConfig.size / 2;
+  const wallHeight = 3;
+  
+  // 床
+  const floor = document.createElement('a-plane');
+  floor.setAttribute('rotation', '-90 0 0');
+  floor.setAttribute('width', roomConfig.size);
+  floor.setAttribute('height', roomConfig.size);
+  floor.setAttribute('color', roomConfig.floorColor);
+  floor.setAttribute('position', '0 0 0');
+  floor.id = 'floor';
+  scene.appendChild(floor);
+  
+  // 壁（前）
+  const wallFront = document.createElement('a-plane');
+  wallFront.setAttribute('position', `0 ${wallHeight/2} -${halfSize}`);
+  wallFront.setAttribute('rotation', '0 0 0');
+  wallFront.setAttribute('width', roomConfig.size);
+  wallFront.setAttribute('height', wallHeight);
+  wallFront.setAttribute('color', roomConfig.wallColor);
+  scene.appendChild(wallFront);
+  
+  // 壁（後）
+  const wallBack = document.createElement('a-plane');
+  wallBack.setAttribute('position', `0 ${wallHeight/2} ${halfSize}`);
+  wallBack.setAttribute('rotation', '0 180 0');
+  wallBack.setAttribute('width', roomConfig.size);
+  wallBack.setAttribute('height', wallHeight);
+  wallBack.setAttribute('color', roomConfig.wallColor);
+  scene.appendChild(wallBack);
+  
+  // 壁（左）
+  const wallLeft = document.createElement('a-plane');
+  wallLeft.setAttribute('position', `-${halfSize} ${wallHeight/2} 0`);
+  wallLeft.setAttribute('rotation', '0 90 0');
+  wallLeft.setAttribute('width', roomConfig.size);
+  wallLeft.setAttribute('height', wallHeight);
+  wallLeft.setAttribute('color', roomConfig.wallColor);
+  scene.appendChild(wallLeft);
+  
+  // 壁（右）
+  const wallRight = document.createElement('a-plane');
+  wallRight.setAttribute('position', `${halfSize} ${wallHeight/2} 0`);
+  wallRight.setAttribute('rotation', '0 -90 0');
+  wallRight.setAttribute('width', roomConfig.size);
+  wallRight.setAttribute('height', wallHeight);
+  wallRight.setAttribute('color', roomConfig.wallColor);
+  scene.appendChild(wallRight);
+  
+  // カメラ位置と移動範囲を設定
+  const camera = document.getElementById('camera');
+  const cameraPos = camera.getAttribute('position');
+  camera.setAttribute('position', `${cameraPos.x} ${roomConfig.cameraHeight} ${cameraPos.z}`);
+  camera.setAttribute('rotation', '0 0 0');
+  
+  currentRoomBounds = roomConfig.bounds;
+  
+  console.log('部屋構築完了:', roomName, roomConfig);
+}
 
 console.log('初期化完了');

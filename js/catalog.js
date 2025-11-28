@@ -24,8 +24,8 @@ const furnitureDatabase = {
   ]
 };
 
-// Three.jsビューワー作成
-function createViewer(containerId, modelPath) {
+// Three.jsビューワー作成（改良版：インタラクティブ制御対応）
+function createViewer(containerId, modelPath, interactive = true, expandable = false) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
@@ -59,8 +59,17 @@ function createViewer(containerId, modelPath) {
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = 2;
+  
+  // インタラクティブ制御
+  if (!interactive) {
+    controls.enabled = false; // 操作不可
+    controls.autoRotate = true; // 自動回転のみ
+    controls.autoRotateSpeed = 2;
+  } else {
+    controls.enabled = true;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 2;
+  }
 
   // GLBモデル読み込み
   const loader = new THREE.GLTFLoader();
@@ -90,6 +99,14 @@ function createViewer(containerId, modelPath) {
     }
   );
 
+  // 拡大可能な場合、クリック/タップで拡大モーダル表示
+  if (expandable) {
+    container.style.cursor = 'pointer';
+    container.addEventListener('click', () => {
+      openExpandedViewer(modelPath);
+    });
+  }
+
   // アニメーションループ
   function animate() {
     requestAnimationFrame(animate);
@@ -108,17 +125,133 @@ function createViewer(containerId, modelPath) {
   });
 }
 
-// カテゴリカードの3Dプレビュー初期化
+// 拡大ビューワーモーダル
+function openExpandedViewer(modelPath) {
+  // モーダル作成
+  const modal = document.createElement('div');
+  modal.className = 'expanded-viewer-modal';
+  modal.innerHTML = `
+    <div class="expanded-viewer-content">
+      <span class="expanded-viewer-close">&times;</span>
+      <div id="expanded-viewer-container" class="expanded-viewer-canvas"></div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  document.body.style.overflow = 'hidden';
+
+  // 閉じるボタン
+  const closeBtn = modal.querySelector('.expanded-viewer-close');
+  closeBtn.addEventListener('click', () => {
+    modal.remove();
+    document.body.style.overflow = 'auto';
+  });
+
+  // モーダル外クリックで閉じる
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+      document.body.style.overflow = 'auto';
+    }
+  });
+
+  // 拡大ビューワー作成（操作可能）
+  setTimeout(() => {
+    createExpandedViewer('expanded-viewer-container', modelPath);
+  }, 100);
+}
+
+// 拡大ビューワー専用（フルコントロール可能）
+function createExpandedViewer(containerId, modelPath) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+
+  // シーン
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xf5f5f5);
+
+  // カメラ
+  const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+  camera.position.set(3, 3, 5);
+
+  // レンダラー
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(width, height);
+  renderer.shadowMap.enabled = true;
+  container.appendChild(renderer.domElement);
+
+  // ライト
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+  scene.add(ambientLight);
+
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+  directionalLight.position.set(5, 10, 7);
+  directionalLight.castShadow = true;
+  scene.add(directionalLight);
+
+  // OrbitControls（フル操作可能）
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+  controls.enabled = true;
+  controls.autoRotate = false;
+
+  // GLBモデル読み込み
+  const loader = new THREE.GLTFLoader();
+  loader.load(
+    `assets/models/${modelPath}`,
+    (gltf) => {
+      const model = gltf.scene;
+      
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const scale = 2.5 / maxDim;
+      model.scale.multiplyScalar(scale);
+
+      box.setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      model.position.sub(center);
+
+      scene.add(model);
+    },
+    undefined,
+    (error) => {
+      console.error('拡大ビューワーモデル読み込みエラー:', error);
+    }
+  );
+
+  // アニメーションループ
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // リサイズ対応
+  window.addEventListener('resize', () => {
+    const newWidth = container.clientWidth;
+    const newHeight = container.clientHeight;
+    camera.aspect = newWidth / newHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(newWidth, newHeight);
+  });
+}
+
+// カテゴリカードの3Dプレビュー初期化（操作不可）
 function initCategoryPreviews() {
   Object.keys(furnitureDatabase).forEach(category => {
     const items = furnitureDatabase[category];
     if (items.length > 0) {
-      // ランダムに1つ選択
       const randomItem = items[Math.floor(Math.random() * items.length)];
       const viewerId = `viewer-${category}`;
       
       if (document.getElementById(viewerId)) {
-        createViewer(viewerId, randomItem.model);
+        createViewer(viewerId, randomItem.model, false, false); // interactive=false
       }
     }
   });
@@ -154,13 +287,14 @@ function openCategoryDetail(category) {
       <div id="${viewerId}" class="detail-model-viewer"></div>
       <h3 class="detail-item-name">${item.name}</h3>
       <p class="detail-item-description">${item.description}</p>
+      <p class="detail-tap-hint">タップで拡大表示</p>
     `;
     
     grid.appendChild(card);
 
-    // 3Dビューワー作成（DOM追加後に実行）
+    // 3Dビューワー作成（タップで拡大可能）
     setTimeout(() => {
-      createViewer(viewerId, item.model);
+      createViewer(viewerId, item.model, false, true); // interactive=false, expandable=true
     }, 100);
   });
 

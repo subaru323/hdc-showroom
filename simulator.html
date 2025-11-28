@@ -7,6 +7,43 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- 部屋選択モーダル -->
+  <div id="room-selection-modal" class="modal" style="display: flex;">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2>部屋を選択してください</h2>
+      </div>
+      <div class="room-selection-grid">
+        <div class="room-card" onclick="selectRoom('standard')">
+          <div class="room-preview-simple">
+            <div class="room-icon">🏠</div>
+            <div class="room-size">10m × 10m</div>
+          </div>
+          <h3 class="room-name">スタンダードルーム</h3>
+          <p class="room-description">白い壁とグレーの床</p>
+        </div>
+        
+        <div class="room-card" onclick="selectRoom('wide')">
+          <div class="room-preview-simple">
+            <div class="room-icon">🏛️</div>
+            <div class="room-size">15m × 15m</div>
+          </div>
+          <h3 class="room-name">ワイドルーム</h3>
+          <p class="room-description">明るい空間と木目調の床</p>
+        </div>
+        
+        <div class="room-card" onclick="selectRoom('compact')">
+          <div class="room-preview-simple">
+            <div class="room-icon">🛌</div>
+            <div class="room-size">8m × 8m</div>
+          </div>
+          <h3 class="room-name">コンパクトルーム</h3>
+          <p class="room-description">居心地のよい温かみのある空間</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="info">モード: 配置</div>
   <div id="selected-furniture-info"></div>
   <div id="center-cursor"></div>
