@@ -1,9 +1,8 @@
 let selectedFurniture = null;
 let selectedVariant = null;
 let furnitureCounter = 0;
-let deleteMode = false;
-let rotateMode = false;
-let targetFurniture = null;
+let selectedFurnitureEntity = null; // 選択中の家具エンティティ
+let selectionBox = null; // 選択枠
 
 console.log('スクリプト開始');
 
@@ -106,6 +105,178 @@ const furnitureConfig = {
   }
 };
 
+// 家具選択機能
+function selectFurnitureByClick(event) {
+  const camera = document.getElementById('camera');
+  const scene = document.querySelector('a-scene');
+  
+  if (!camera || !scene) return;
+  
+  // タッチイベントとマウスイベントの両方に対応
+  const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+  const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+  
+  // マウス/タッチ位置を正規化座標に変換
+  const rect = scene.canvas.getBoundingClientRect();
+  const x = ((clientX - rect.left) / rect.width) * 2 - 1;
+  const y = -((clientY - rect.top) / rect.height) * 2 + 1;
+  
+  // レイキャスター設定
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(new THREE.Vector2(x, y), camera.components.camera.camera);
+  
+  // 家具との交差判定
+  const furnitureElements = document.querySelectorAll('.furniture');
+  const intersectableObjects = [];
+  
+  furnitureElements.forEach(el => {
+    if (el.object3D) {
+      el.object3D.traverse(child => {
+        if (child.isMesh) {
+          // 選択枠を除外
+          if (!child.el || !child.el.classList.contains('selection-box')) {
+            intersectableObjects.push({ mesh: child, element: el });
+          }
+        }
+      });
+    }
+  });
+  
+  const intersects = raycaster.intersectObjects(intersectableObjects.map(o => o.mesh));
+  
+  if (intersects.length > 0) {
+    // クリックした家具を特定
+    const clickedMesh = intersects[0].object;
+    const clickedFurniture = intersectableObjects.find(o => o.mesh === clickedMesh)?.element;
+    
+    if (clickedFurniture) {
+      // 同じ家具を再度クリック → 選択解除
+      if (selectedFurnitureEntity === clickedFurniture) {
+        deselectFurniture();
+      } else {
+        // 新しい家具を選択
+        selectFurniture(clickedFurniture);
+      }
+    }
+  }
+}
+
+// 家具を選択
+function selectFurniture(furnitureEl) {
+  // 既存の選択を解除
+  deselectFurniture();
+  
+  selectedFurnitureEntity = furnitureEl;
+  
+  // 選択枠を作成
+  const box = new THREE.Box3().setFromObject(furnitureEl.object3D);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  
+  selectionBox = document.createElement('a-box');
+  selectionBox.setAttribute('position', center);
+  selectionBox.setAttribute('width', size.x + 0.2);
+  selectionBox.setAttribute('height', size.y + 0.2);
+  selectionBox.setAttribute('depth', size.z + 0.2);
+  selectionBox.setAttribute('material', {
+    color: '#00FF00',
+    opacity: 0.3,
+    transparent: true,
+    wireframe: true
+  });
+  selectionBox.classList.add('selection-box');
+  
+  furnitureEl.appendChild(selectionBox);
+  
+  // 家具名を表示
+  const furnitureId = furnitureEl.id;
+  const furnitureName = getFurnitureName(furnitureId);
+  
+  const infoDiv = document.getElementById('selected-furniture-info');
+  infoDiv.textContent = `選択中: ${furnitureName}`;
+  infoDiv.style.display = 'block';
+  
+  console.log('家具選択:', furnitureName);
+}
+
+// 家具の選択を解除
+function deselectFurniture() {
+  if (selectionBox) {
+    selectionBox.parentNode.removeChild(selectionBox);
+    selectionBox = null;
+  }
+  
+  selectedFurnitureEntity = null;
+  
+  const infoDiv = document.getElementById('selected-furniture-info');
+  infoDiv.style.display = 'none';
+  
+  console.log('家具選択解除');
+}
+
+// 家具IDから名前を取得
+function getFurnitureName(furnitureId) {
+  for (const category in furnitureConfig) {
+    const variants = furnitureConfig[category].variants;
+    for (const variant of variants) {
+      if (furnitureId.includes(variant.id)) {
+        return variant.name;
+      }
+    }
+  }
+  return '不明な家具';
+}
+
+// シーンクリックイベント
+window.addEventListener('load', () => {
+  const scene = document.querySelector('a-scene');
+  if (scene) {
+    scene.addEventListener('click', selectFurnitureByClick);
+    scene.addEventListener('touchstart', selectFurnitureByClick);
+  }
+});
+
+// カテゴリ選択モーダルを開く
+function openCategorySelect() {
+  const modal = document.getElementById('category-modal');
+  const grid = document.getElementById('category-grid');
+  
+  grid.innerHTML = '';
+  
+  const categories = [
+    { id: 'sofa', name: 'ソファ', icon: '🛋️' },
+    { id: 'table', name: 'テーブル', icon: '🪑' },
+    { id: 'kitchen', name: 'キッチン', icon: '🔪' },
+    { id: 'cabinet', name: '棚', icon: '📦' },
+    { id: 'chair', name: '椅子', icon: '🪑' }
+  ];
+  
+  categories.forEach(cat => {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.onclick = () => {
+      closeCategorySelect();
+      openGallery(cat.id);
+    };
+    
+    item.innerHTML = `
+      <div style="font-size: 60px; margin: 20px 0;">${cat.icon}</div>
+      <p style="font-size: 18px; font-weight: bold;">${cat.name}</p>
+    `;
+    
+    grid.appendChild(item);
+  });
+  
+  modal.classList.add('active');
+  console.log('カテゴリ選択表示');
+}
+
+// カテゴリ選択モーダルを閉じる
+function closeCategorySelect() {
+  const modal = document.getElementById('category-modal');
+  modal.classList.remove('active');
+}
+
 // ギャラリーモーダルを開く
 function openGallery(category) {
   const modal = document.getElementById('gallery-modal');
@@ -141,14 +312,9 @@ function selectVariant(category, variantId) {
   
   closeGallery();
   
-  deleteMode = false;
-  rotateMode = false;
-  
   document.querySelectorAll('.furniture-btn').forEach(btn => {
     btn.classList.remove('active');
   });
-  document.getElementById('delete-btn').classList.remove('active');
-  document.getElementById('rotate-btn').classList.remove('active');
   
   updateInfo();
   console.log('選択:', category, variantId);
@@ -160,70 +326,23 @@ function closeGallery() {
   modal.classList.remove('active');
 }
 
-// 閉じるボタンのイベント
-document.addEventListener('DOMContentLoaded', function() {
-  const closeBtn = document.querySelector('.close');
-  const modal = document.getElementById('gallery-modal');
+// モーダル外クリックで閉じる
+window.onclick = function(event) {
+  const categoryModal = document.getElementById('category-modal');
+  const galleryModal = document.getElementById('gallery-modal');
   
-  closeBtn.onclick = closeGallery;
-  
-  window.onclick = function(event) {
-    if (event.target === modal) {
-      closeGallery();
-    }
-  };
-});
-
-// 回転モード切替
-function toggleRotateMode() {
-  rotateMode = !rotateMode;
-  deleteMode = false;
-  selectedFurniture = null;
-  selectedVariant = null;
-  
-  if (rotateMode) {
-    document.querySelectorAll('.furniture-btn').forEach(btn => {
-      btn.classList.remove('active');
-    });
-    document.getElementById('delete-btn').classList.remove('active');
-    document.getElementById('rotate-btn').classList.add('active');
-  } else {
-    document.getElementById('rotate-btn').classList.remove('active');
+  if (event.target === categoryModal) {
+    closeCategorySelect();
   }
-  
-  updateInfo();
-  console.log('回転モード:', rotateMode);
-}
-
-// 削除モード切替
-function toggleDeleteMode() {
-  deleteMode = !deleteMode;
-  rotateMode = false;
-  selectedFurniture = null;
-  selectedVariant = null;
-  
-  if (deleteMode) {
-    document.querySelectorAll('.furniture-btn').forEach(btn => {
-      btn.classList.remove('active');
-    });
-    document.getElementById('rotate-btn').classList.remove('active');
-    document.getElementById('delete-btn').classList.add('active');
-  } else {
-    document.getElementById('delete-btn').classList.remove('active');
+  if (event.target === galleryModal) {
+    closeGallery();
   }
-  
-  updateInfo();
-  console.log('削除モード:', deleteMode);
-}
+};
 
 // 情報表示更新
 function updateInfo() {
   let info = document.getElementById('info');
-  if (deleteMode) {
-    info.textContent = 'モード: 削除（家具に照準を合わせて📍ボタン）';
-  } else if (rotateMode) {
-    info.textContent = 'モード: 回転（家具に照準を合わせてQ/Eキー）';
-  } else if (selectedFurniture && selectedVariant) {
+  if (selectedFurniture && selectedVariant) {
     const variant = getVariantById(selectedFurniture, selectedVariant);
     info.textContent = `モード: 配置（${variant.name}）`;
   } else {
@@ -238,21 +357,15 @@ function getVariantById(category, variantId) {
 
 // 配置実行
 function placeFurniture() {
-  if (deleteMode) {
-    deleteFurnitureAtCenter();
-  } else if (rotateMode) {
-    alert('回転モードではQ/Eキーを使用してください');
-  } else {
-    if (!selectedFurniture || !selectedVariant) {
-      alert('家具を選択してください');
-      return;
-    }
-
-    let pointer = document.getElementById('pointer');
-    let pos = pointer.getAttribute('position');
-    
-    createFurniture(selectedFurniture, selectedVariant, pos);
+  if (!selectedFurniture || !selectedVariant) {
+    alert('家具を選択してください');
+    return;
   }
+
+  let pointer = document.getElementById('pointer');
+  let pos = pointer.getAttribute('position');
+  
+  createFurniture(selectedFurniture, selectedVariant, pos);
 }
 
 // 家具生成
@@ -297,90 +410,65 @@ function createFurniture(category, variantId, position) {
   console.log(`${settings.name} 配置完了 at (${position.x.toFixed(2)}, ${position.z.toFixed(2)})`);
 }
 
-// 画面中央の家具を削除
+// 選択中の家具を削除
 function deleteFurnitureAtCenter() {
-  const camera = document.getElementById('camera');
-  const raycaster = new THREE.Raycaster();
-  
-  const direction = new THREE.Vector3(0, 0, -1);
-  camera.object3D.getWorldDirection(direction);
-  
-  const origin = new THREE.Vector3();
-  camera.object3D.getWorldPosition(origin);
-  
-  raycaster.set(origin, direction);
-  
-  const scene = document.querySelector('a-scene').object3D;
-  const intersects = raycaster.intersectObjects(scene.children, true);
-  
-  if (intersects.length > 0) {
-    for (let intersect of intersects) {
-      let obj = intersect.object;
-      
-      while (obj && !obj.el) {
-        obj = obj.parent;
-      }
-      
-      if (obj && obj.el && obj.el.id.startsWith('furniture-')) {
-        obj.el.parentNode.removeChild(obj.el);
-        console.log('削除:', obj.el.id);
-        updateInfo();
-        return;
-      }
-    }
-    
-    alert('照準に家具がありません');
-  } else {
-    alert('照準に家具がありません');
+  if (!selectedFurnitureEntity) {
+    alert('削除する家具をクリックして選択してください');
+    return;
   }
+  
+  console.log('削除:', selectedFurnitureEntity.id);
+  selectedFurnitureEntity.parentNode.removeChild(selectedFurnitureEntity);
+  deselectFurniture();
 }
 
-// 画面中央の家具を回転
+// 選択中の家具を回転
 function rotateFurnitureAtCenter(angle) {
-  const camera = document.getElementById('camera');
-  const raycaster = new THREE.Raycaster();
-  
-  const direction = new THREE.Vector3(0, 0, -1);
-  camera.object3D.getWorldDirection(direction);
-  
-  const origin = new THREE.Vector3();
-  camera.object3D.getWorldPosition(origin);
-  
-  raycaster.set(origin, direction);
-  
-  const scene = document.querySelector('a-scene').object3D;
-  const intersects = raycaster.intersectObjects(scene.children, true);
-  
-  if (intersects.length > 0) {
-    for (let intersect of intersects) {
-      let obj = intersect.object;
-      
-      while (obj && !obj.el) {
-        obj = obj.parent;
-      }
-      
-      if (obj && obj.el && obj.el.id.startsWith('furniture-')) {
-        let currentRot = obj.el.getAttribute('rotation');
-        obj.el.setAttribute('rotation', {
-          x: currentRot.x,
-          y: currentRot.y + angle,
-          z: currentRot.z
-        });
-        console.log('回転:', angle + '度', obj.el.id);
-        return;
-      }
-    }
+  if (!selectedFurnitureEntity) {
+    alert('回転する家具をクリックして選択してください');
+    return;
   }
+  
+  let currentRot = selectedFurnitureEntity.getAttribute('rotation');
+  selectedFurnitureEntity.setAttribute('rotation', {
+    x: currentRot.x,
+    y: currentRot.y + angle,
+    z: currentRot.z
+  });
+  
+  // 選択枠も一緒に回転
+  if (selectionBox) {
+    selectionBox.parentNode.removeChild(selectionBox);
+    
+    const box = new THREE.Box3().setFromObject(selectedFurnitureEntity.object3D);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    
+    selectionBox = document.createElement('a-box');
+    selectionBox.setAttribute('position', center);
+    selectionBox.setAttribute('width', size.x + 0.2);
+    selectionBox.setAttribute('height', size.y + 0.2);
+    selectionBox.setAttribute('depth', size.z + 0.2);
+    selectionBox.setAttribute('material', {
+      color: '#00FF00',
+      opacity: 0.3,
+      transparent: true,
+      wireframe: true
+    });
+    selectionBox.classList.add('selection-box');
+    
+    selectedFurnitureEntity.appendChild(selectionBox);
+  }
+  
+  console.log('回転:', angle + '度', selectedFurnitureEntity.id);
 }
 
 // キーボード入力
 document.addEventListener('keydown', function(e) {
-  if (rotateMode) {
-    if (e.key === 'q' || e.key === 'Q') {
-      rotateFurnitureAtCenter(-45);
-    } else if (e.key === 'e' || e.key === 'E') {
-      rotateFurnitureAtCenter(45);
-    }
+  if (e.key === 'q' || e.key === 'Q') {
+    rotateFurnitureAtCenter(-45);
+  } else if (e.key === 'e' || e.key === 'E') {
+    rotateFurnitureAtCenter(45);
   }
 });
 
@@ -390,6 +478,9 @@ setInterval(function() {
   let pointer = document.querySelector('#pointer');
   
   if (!camera || !pointer) return;
+  
+  // ジョイスティックによるカメラ移動
+  updateCameraFromJoystick();
   
   // 壁の境界チェック
   let cameraPos = camera.getAttribute('position');
@@ -402,21 +493,121 @@ setInterval(function() {
   
   if (changed) camera.setAttribute('position', cameraPos);
   
-  // ポインター表示/非表示の切り替え
-  if (deleteMode || rotateMode) {
-    pointer.setAttribute('visible', 'false');
-  } else {
-    pointer.setAttribute('visible', 'true');
-    
-    let cameraRot = camera.object3D.rotation;
-    let distance = 3;
-    let x = cameraPos.x - Math.sin(cameraRot.y) * distance;
-    let z = cameraPos.z - Math.cos(cameraRot.y) * distance;
-    
-    pointer.setAttribute('position', {x: x, y: 0.02, z: z});
-    pointer.setAttribute('color', '#00FF00');
-    pointer.setAttribute('opacity', '0.8');
-  }
+  // ポインター表示
+  pointer.setAttribute('visible', 'true');
+  
+  let cameraRot = camera.object3D.rotation;
+  let distance = 3;
+  let x = cameraPos.x - Math.sin(cameraRot.y) * distance;
+  let z = cameraPos.z - Math.cos(cameraRot.y) * distance;
+  
+  pointer.setAttribute('position', {x: x, y: 0.02, z: z});
+  pointer.setAttribute('color', '#00FF00');
+  pointer.setAttribute('opacity', '0.8');
 }, 50);
+
+// バーチャルジョイスティック制御
+let joystickActive = false;
+let joystickDirection = { x: 0, z: 0 };
+
+function initJoystick() {
+  const container = document.getElementById('joystick-container');
+  const stick = document.getElementById('joystick-stick');
+  const base = document.getElementById('joystick-base');
+  
+  if (!container || !stick || !base) return;
+  
+  const maxDistance = 35; // スティックの最大移動距離
+  
+  function handleStart(e) {
+    joystickActive = true;
+  }
+  
+  function handleMove(e) {
+    if (!joystickActive) return;
+    
+    e.preventDefault();
+    
+    const touch = e.touches ? e.touches[0] : e;
+    const rect = base.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    let deltaX = touch.clientX - centerX;
+    let deltaY = touch.clientY - centerY;
+    
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    
+    if (distance > maxDistance) {
+      const angle = Math.atan2(deltaY, deltaX);
+      deltaX = Math.cos(angle) * maxDistance;
+      deltaY = Math.sin(angle) * maxDistance;
+    }
+    
+    stick.style.left = (35 + deltaX) + 'px';
+    stick.style.top = (35 + deltaY) + 'px';
+    
+    // 移動方向を正規化（-1 〜 1）
+    joystickDirection.x = deltaX / maxDistance;
+    joystickDirection.z = deltaY / maxDistance;
+  }
+  
+  function handleEnd() {
+    joystickActive = false;
+    stick.style.left = '35px';
+    stick.style.top = '35px';
+    joystickDirection.x = 0;
+    joystickDirection.z = 0;
+  }
+  
+  // タッチイベント
+  stick.addEventListener('touchstart', handleStart);
+  document.addEventListener('touchmove', handleMove);
+  document.addEventListener('touchend', handleEnd);
+  
+  // マウスイベント（テスト用）
+  stick.addEventListener('mousedown', handleStart);
+  document.addEventListener('mousemove', handleMove);
+  document.addEventListener('mouseup', handleEnd);
+}
+
+// ジョイスティックによるカメラ移動
+function updateCameraFromJoystick() {
+  if (!joystickActive) return;
+  
+  const camera = document.getElementById('camera');
+  if (!camera) return;
+  
+  const pos = camera.getAttribute('position');
+  const rot = camera.object3D.rotation;
+  
+  const moveSpeed = 0.1;
+  
+  // カメラの向きに基づいて移動
+  const forward = {
+    x: -Math.sin(rot.y) * joystickDirection.z * moveSpeed,
+    z: -Math.cos(rot.y) * joystickDirection.z * moveSpeed
+  };
+  
+  const strafe = {
+    x: Math.cos(rot.y) * joystickDirection.x * moveSpeed,
+    z: -Math.sin(rot.y) * joystickDirection.x * moveSpeed
+  };
+  
+  pos.x += forward.x + strafe.x;
+  pos.z += forward.z + strafe.z;
+  
+  // 壁の制限
+  pos.x = Math.max(-9.5, Math.min(9.5, pos.x));
+  pos.z = Math.max(-9.5, Math.min(9.5, pos.z));
+  
+  camera.setAttribute('position', pos);
+}
+
+// ページ読み込み時にジョイスティック初期化
+window.addEventListener('load', () => {
+  initJoystick();
+  console.log('ジョイスティック初期化完了');
+});
 
 console.log('初期化完了');

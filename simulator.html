@@ -8,6 +8,7 @@
 </head>
 <body>
   <div id="info">モード: 配置</div>
+  <div id="selected-furniture-info"></div>
   <div id="center-cursor"></div>
   
   <!-- 回転ボタン -->
@@ -76,8 +77,8 @@
   <div id="furniture-menu">
     <button class="furniture-btn" onclick="openCategorySelect()">🪑 家具</button>
     <button id="place-btn" class="furniture-btn" onclick="placeFurniture()">📍 配置</button>
-    <button id="rotate-btn" class="furniture-btn" onclick="toggleRotateMode()">🔄 回転</button>
-    <button id="delete-btn" class="furniture-btn" onclick="toggleDeleteMode()">🗑️ 削除</button>
+    <button id="rotate-btn" class="furniture-btn" onclick="rotateFurnitureAtCenter(45)">🔄 回転</button>
+    <button id="delete-btn" class="furniture-btn" onclick="deleteFurnitureAtCenter()">🗑️ 削除</button>
   </div>
 
   <script src="js/main.js"></script>
