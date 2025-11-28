@@ -69,15 +69,39 @@ const furnitureConfig = {
   cabinet: {
     name: '棚',
     variants: [
-      { id: 'cabinet-tall', name: '高棚', width: 1, height: 2, depth: 0.5, color: '#A0522D' },
-      { id: 'cabinet-wide', name: '横長棚', width: 2, height: 1, depth: 0.4, color: '#8B7355' }
+      { 
+        id: 'cabinet-shelf', 
+        name: 'オープンシェルフ', 
+        model: 'assets/models/cc0_-_shelf_3.glb',
+        scale: '1 1 1',
+        yOffset: 0
+      },
+      { 
+        id: 'cabinet-storage', 
+        name: 'ストレージキャビネット', 
+        model: 'assets/models/storage_cabinet_furniture.glb',
+        scale: '1 1 1',
+        yOffset: 0
+      }
     ]
   },
   chair: {
     name: '椅子',
     variants: [
-      { id: 'chair-dining', name: 'ダイニングチェア', width: 0.5, height: 1, depth: 0.5, color: '#8B7355' },
-      { id: 'chair-office', name: 'オフィスチェア', width: 0.6, height: 1.2, depth: 0.6, color: '#696969' }
+      { 
+        id: 'chair-gaming', 
+        name: 'ゲーミングチェア', 
+        model: 'assets/models/gaming_chair_free_download.glb',
+        scale: '1 1 1',
+        yOffset: 0
+      },
+      { 
+        id: 'chair-wood', 
+        name: 'ウッドチェア', 
+        model: 'assets/models/wood_chair.glb',
+        scale: '1 1 1',
+        yOffset: 0
+      }
     ]
   }
 };
