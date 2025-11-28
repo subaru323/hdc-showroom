@@ -14,7 +14,7 @@
         <h2>部屋を選択してください</h2>
       </div>
       <div class="room-selection-grid">
-        <div class="room-card" onclick="selectRoom('standard')">
+        <div class="room-card" data-room="standard">
           <div class="room-preview-simple">
             <div class="room-icon">🏠</div>
             <div class="room-size">10m × 10m</div>
@@ -23,7 +23,7 @@
           <p class="room-description">白い壁とグレーの床</p>
         </div>
         
-        <div class="room-card" onclick="selectRoom('wide')">
+        <div class="room-card" data-room="wide">
           <div class="room-preview-simple">
             <div class="room-icon">🏛️</div>
             <div class="room-size">15m × 15m</div>
@@ -32,7 +32,7 @@
           <p class="room-description">明るい空間と木目調の床</p>
         </div>
         
-        <div class="room-card" onclick="selectRoom('compact')">
+        <div class="room-card" data-room="compact">
           <div class="room-preview-simple">
             <div class="room-icon">🛌</div>
             <div class="room-size">8m × 8m</div>
@@ -78,7 +78,7 @@
     </div>
   </div>
   
-  <a-scene>
+  <a-scene style="display: none;" id="vr-scene">
     <a-plane id="floor"
              position="0 0 0" 
              rotation="-90 0 0" 

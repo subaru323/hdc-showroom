@@ -7,6 +7,65 @@ let currentRoomBounds = { x: 20, z: 20 }; // 現在の部屋の移動範囲
 
 console.log('スクリプト開始');
 
+window.showRoomSelection = function() {
+  const modal = document.getElementById('room-selection-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // A-Frameシーンのタッチイベントを無効化
+    const scene = document.getElementById('vr-scene');
+    if (scene) {
+      scene.style.pointerEvents = 'none';
+    }
+    
+    // ルームカードにイベントリスナーを追加
+    const roomCards = document.querySelectorAll('.room-card');
+    roomCards.forEach(card => {
+      // クリックイベント（PC用）
+      card.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const roomName = this.getAttribute('data-room');
+        console.log('カードクリック:', roomName);
+        selectRoomHandler(roomName);
+      });
+      
+      // タッチイベント（スマホ用）
+      card.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const roomName = this.getAttribute('data-room');
+        console.log('カードタッチ:', roomName);
+        selectRoomHandler(roomName);
+      });
+    });
+  }
+};
+
+function selectRoomHandler(roomName) {
+  console.log('部屋選択:', roomName);
+  
+  // モーダルを閉じる
+  const modal = document.getElementById('room-selection-modal');
+  modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  
+  // A-Frameシーンを表示してタッチイベントを有効化
+  const scene = document.getElementById('vr-scene');
+  scene.style.display = 'block';
+  scene.style.pointerEvents = 'auto';
+  
+  // A-Frameシーンの読み込み完了を待つ
+  if (scene.hasLoaded) {
+    loadRoomToScene(roomName);
+  } else {
+    scene.addEventListener('loaded', () => {
+      loadRoomToScene(roomName);
+    });
+  }
+}
+
 // 家具設定（GLBモデル対応）
 const furnitureConfig = {
   sofa: {
@@ -620,34 +679,15 @@ window.addEventListener('load', () => {
   showRoomSelection();
 });
 
-// 部屋選択機能
-function showRoomSelection() {
-  const modal = document.getElementById('room-selection-modal');
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function selectRoom(roomName) {
-  console.log('部屋選択:', roomName);
-  
-  // モーダルを閉じる
-  const modal = document.getElementById('room-selection-modal');
-  modal.style.display = 'none';
-  document.body.style.overflow = 'auto';
-  
-  // A-Frameシーンに部屋をロード
-  loadRoomToScene(roomName);
-}
-
 function loadRoomToScene(roomName) {
   const scene = document.querySelector('a-scene');
   
   // 既存の床と壁を削除
-  const floor = document.getElementById('floor');
+  const oldFloor = document.getElementById('floor');
   const walls = document.querySelectorAll('a-plane[color="#F5F5F0"]');
   const oldRoomModel = document.getElementById('room-model');
   
-  if (floor) floor.remove();
+  if (oldFloor) oldFloor.remove();
   walls.forEach(wall => wall.remove());
   if (oldRoomModel) oldRoomModel.remove();
   
@@ -683,14 +723,14 @@ function loadRoomToScene(roomName) {
   const wallHeight = 3;
   
   // 床
-  const floor = document.createElement('a-plane');
-  floor.setAttribute('rotation', '-90 0 0');
-  floor.setAttribute('width', roomConfig.size);
-  floor.setAttribute('height', roomConfig.size);
-  floor.setAttribute('color', roomConfig.floorColor);
-  floor.setAttribute('position', '0 0 0');
-  floor.id = 'floor';
-  scene.appendChild(floor);
+  const newFloor = document.createElement('a-plane');
+  newFloor.setAttribute('rotation', '-90 0 0');
+  newFloor.setAttribute('width', roomConfig.size);
+  newFloor.setAttribute('height', roomConfig.size);
+  newFloor.setAttribute('color', roomConfig.floorColor);
+  newFloor.setAttribute('position', '0 0 0');
+  newFloor.id = 'floor';
+  scene.appendChild(newFloor);
   
   // 壁（前）
   const wallFront = document.createElement('a-plane');
