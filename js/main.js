@@ -221,6 +221,15 @@ window.addEventListener('load', () => {
   if (scene) {
     scene.addEventListener('click', selectFurnitureByClick);
     scene.addEventListener('touchstart', selectFurnitureByClick);
+    
+    // A-Frame読み込み完了でローディング画面を非表示
+    scene.addEventListener('loaded', () => {
+      const loadingScreen = document.getElementById('loading-screen');
+      if (loadingScreen) {
+        loadingScreen.style.display = 'none';
+      }
+      console.log('A-Frame読み込み完了');
+    });
   }
   
   initJoystick();
