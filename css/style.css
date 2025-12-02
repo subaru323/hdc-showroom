@@ -261,46 +261,8 @@
   font-size: 14px;
 }
 
-/* バーチャルジョイスティック */
-#joystick-container {
-  position: fixed;
-  bottom: 280px;
-  left: 30px;
-  width: 120px;
-  height: 120px;
-  z-index: 1001;
-  display: none; /* デフォルトで非表示 */
-}
-
-#joystick-base {
-  position: absolute;
-  width: 120px;
-  height: 120px;
-  background: rgba(255, 255, 255, 0.3);
-  border: 3px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-}
-
-#joystick-stick {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  background: rgba(255, 255, 255, 0.8);
-  border: 3px solid rgba(255, 255, 255, 1);
-  border-radius: 50%;
-  left: 35px;
-  top: 35px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  transition: all 0.1s;
-  cursor: pointer;
-}
-
 /* スマホでのみ表示 */
 @media (max-width: 768px) {
-  #joystick-container {
-    display: block;
-  }
   
   #furniture-menu {
     flex-wrap: wrap;

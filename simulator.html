@@ -105,10 +105,30 @@
     <a-camera id="camera" position="0 1.6 5"></a-camera>
   </a-scene>
 
-  <!-- バーチャルジョイスティック -->
-  <div id="joystick-container">
-    <div id="joystick-base"></div>
-    <div id="joystick-stick"></div>
+  <!-- 移動ボタン -->
+  <div id="move-buttons" style="position: fixed; bottom: 20px; left: 20px; display: grid; grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(3, 60px); gap: 5px; z-index: 1000;">
+    <div></div>
+    <button class="move-btn" data-direction="forward" style="background: rgba(255,255,255,0.8); border: 2px solid #333; border-radius: 10px; font-size: 24px; cursor: pointer;">↑</button>
+    <div></div>
+    <button class="move-btn" data-direction="left" style="background: rgba(255,255,255,0.8); border: 2px solid #333; border-radius: 10px; font-size: 24px; cursor: pointer;">←</button>
+    <div></div>
+    <button class="move-btn" data-direction="right" style="background: rgba(255,255,255,0.8); border: 2px solid #333; border-radius: 10px; font-size: 24px; cursor: pointer;">→</button>
+    <div></div>
+    <button class="move-btn" data-direction="backward" style="background: rgba(255,255,255,0.8); border: 2px solid #333; border-radius: 10px; font-size: 24px; cursor: pointer;">↓</button>
+    <div></div>
+  </div>
+
+  <!-- 視点ボタン -->
+  <div id="look-buttons" style="position: fixed; bottom: 20px; right: 20px; display: grid; grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(3, 60px); gap: 5px; z-index: 1000;">
+    <div></div>
+    <button class="look-btn" data-direction="up" style="background: rgba(255,255,255,0.8); border: 2px solid #333; border-radius: 10px; font-size: 24px; cursor: pointer;">↑</button>
+    <div></div>
+    <button class="look-btn" data-direction="left" style="background: rgba(255,255,255,0.8); border: 2px solid #333; border-radius: 10px; font-size: 24px; cursor: pointer;">←</button>
+    <div></div>
+    <button class="look-btn" data-direction="right" style="background: rgba(255,255,255,0.8); border: 2px solid #333; border-radius: 10px; font-size: 24px; cursor: pointer;">→</button>
+    <div></div>
+    <button class="look-btn" data-direction="down" style="background: rgba(255,255,255,0.8); border: 2px solid #333; border-radius: 10px; font-size: 24px; cursor: pointer;">↓</button>
+    <div></div>
   </div>
 
   <div id="furniture-menu">
