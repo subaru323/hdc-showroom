@@ -446,7 +446,7 @@ function initJoystick() {
     stick.style.top = (35 + deltaY) + 'px';
     
     joystickDirection.x = deltaX / maxDistance;
-    joystickDirection.z = deltaY / maxDistance;
+    joystickDirection.z = -deltaY / maxDistance;
   }
   
   function handleEnd() {
