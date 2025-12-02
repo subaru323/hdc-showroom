@@ -18,30 +18,39 @@ window.showRoomSelection = function() {
     if (scene) {
       scene.style.pointerEvents = 'none';
     }
-    
-    // ルームカードにイベントリスナーを追加
-    const roomCards = document.querySelectorAll('.room-card');
-    roomCards.forEach(card => {
-      // クリックイベント（PC用）
-      card.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const roomName = this.getAttribute('data-room');
-        console.log('カードクリック:', roomName);
-        selectRoomHandler(roomName);
-      });
-      
-      // タッチイベント（スマホ用）
-      card.addEventListener('touchend', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const roomName = this.getAttribute('data-room');
-        console.log('カードタッチ:', roomName);
-        selectRoomHandler(roomName);
-      });
-    });
   }
 };
+
+// ページ読み込み時にイベントリスナーを追加
+window.addEventListener('DOMContentLoaded', () => {
+  const roomCards = document.querySelectorAll('.room-card');
+  roomCards.forEach(card => {
+    // タッチスタートで部屋名を取得
+    let roomName = null;
+    
+    card.addEventListener('touchstart', function(e) {
+      roomName = this.getAttribute('data-room');
+      console.log('タッチ開始:', roomName);
+    }, { passive: true });
+    
+    // タッチエンドで実行
+    card.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      if (roomName) {
+        console.log('タッチ終了:', roomName);
+        selectRoomHandler(roomName);
+      }
+    });
+    
+    // PC用クリック
+    card.addEventListener('click', function(e) {
+      e.preventDefault();
+      const name = this.getAttribute('data-room');
+      console.log('クリック:', name);
+      selectRoomHandler(name);
+    });
+  });
+});
 
 function selectRoomHandler(roomName) {
   console.log('部屋選択:', roomName);
