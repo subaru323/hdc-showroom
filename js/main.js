@@ -448,7 +448,7 @@ function initJoystick() {
     stick.style.top = (35 + deltaY) + 'px';
     
     joystickDirection.x = deltaX / maxDistance;
-    joystickDirection.z = -deltaY / maxDistance; // 上に倒すと前進
+    joystickDirection.z = deltaY / maxDistance; // 符号変更
   }
   
   function handleEnd() {

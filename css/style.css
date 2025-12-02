@@ -341,16 +341,22 @@
   }
   
   #furniture-menu {
-    flex-wrap: wrap;
-    max-width: 90%;
-    justify-content: center;
-    gap: 8px;
+    flex-direction: column;
+    right: 10px;
+    left: auto;
+    transform: none;
+    bottom: 10px;
+    padding: 8px;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
   }
   
   .furniture-btn {
-    font-size: 16px;
-    padding: 12px 20px;
-    min-width: 80px;
+    font-size: 14px;
+    padding: 8px 12px;
+    min-width: 60px;
+    border-radius: 6px;
   }
   
   #info {
