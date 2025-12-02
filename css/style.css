@@ -269,7 +269,7 @@
   width: 120px;
   height: 120px;
   z-index: 1001;
-  display: none;
+  display: block; /* デバッグ用：常に表示 */
 }
 
 #joystick-base {
