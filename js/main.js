@@ -9,13 +9,6 @@ let joystickDirection = { x: 0, z: 0 };
 
 console.log('スクリプト開始');
 
-// 横画面固定
-if (screen.orientation && screen.orientation.lock) {
-  screen.orientation.lock('landscape').catch(err => {
-    console.log('画面固定失敗:', err);
-  });
-}
-
 window.showRoomSelection = function() {
   const modal = document.getElementById('room-selection-modal');
   if (modal) {
