@@ -4,7 +4,8 @@ let furnitureCounter = 0;
 let selectedFurnitureEntity = null;
 let selectionBox = null;
 let currentRoomBounds = { x: 20, z: 20 };
-let cameraRotation = { yaw: 0, pitch: 0 };
+let joystickActive = false;
+let joystickDirection = { x: 0, z: 0 };
 
 console.log('スクリプト開始');
 
@@ -46,81 +47,7 @@ window.addEventListener('DOMContentLoaded', () => {
       selectRoomHandler(name);
     });
   });
-  
-  const moveButtons = document.querySelectorAll('.move-btn');
-  moveButtons.forEach(btn => {
-    btn.addEventListener('touchstart', handleMoveButton);
-    btn.addEventListener('mousedown', handleMoveButton);
-  });
-  
-  const lookButtons = document.querySelectorAll('.look-btn');
-  lookButtons.forEach(btn => {
-    btn.addEventListener('touchstart', handleLookButton);
-    btn.addEventListener('mousedown', handleLookButton);
-  });
 });
-
-function handleMoveButton(e) {
-  e.preventDefault();
-  const direction = this.getAttribute('data-direction');
-  const camera = document.getElementById('camera');
-  if (!camera) return;
-  
-  const pos = camera.getAttribute('position');
-  const moveSpeed = 0.5;
-  
-  switch(direction) {
-    case 'forward':
-      pos.x -= Math.sin(cameraRotation.yaw) * moveSpeed;
-      pos.z -= Math.cos(cameraRotation.yaw) * moveSpeed;
-      break;
-    case 'backward':
-      pos.x += Math.sin(cameraRotation.yaw) * moveSpeed;
-      pos.z += Math.cos(cameraRotation.yaw) * moveSpeed;
-      break;
-    case 'left':
-      pos.x -= Math.cos(cameraRotation.yaw) * moveSpeed;
-      pos.z += Math.sin(cameraRotation.yaw) * moveSpeed;
-      break;
-    case 'right':
-      pos.x += Math.cos(cameraRotation.yaw) * moveSpeed;
-      pos.z -= Math.sin(cameraRotation.yaw) * moveSpeed;
-      break;
-  }
-  
-  const halfX = currentRoomBounds.x / 2;
-  const halfZ = currentRoomBounds.z / 2;
-  pos.x = Math.max(-halfX, Math.min(halfX, pos.x));
-  pos.z = Math.max(-halfZ, Math.min(halfZ, pos.z));
-  
-  camera.setAttribute('position', pos);
-}
-
-function handleLookButton(e) {
-  e.preventDefault();
-  const direction = this.getAttribute('data-direction');
-  const rotateSpeed = 0.1;
-  
-  switch(direction) {
-    case 'left':
-      cameraRotation.yaw -= rotateSpeed;
-      break;
-    case 'right':
-      cameraRotation.yaw += rotateSpeed;
-      break;
-    case 'up':
-      cameraRotation.pitch = Math.max(-Math.PI/2, cameraRotation.pitch - rotateSpeed);
-      break;
-    case 'down':
-      cameraRotation.pitch = Math.min(Math.PI/2, cameraRotation.pitch + rotateSpeed);
-      break;
-  }
-  
-  const camera = document.getElementById('camera');
-  if (camera) {
-    camera.object3D.rotation.set(cameraRotation.pitch, cameraRotation.yaw, 0);
-  }
-}
 
 function selectRoomHandler(roomName) {
   console.log('部屋選択:', roomName);
@@ -288,6 +215,9 @@ window.addEventListener('load', () => {
     scene.addEventListener('click', selectFurnitureByClick);
     scene.addEventListener('touchstart', selectFurnitureByClick);
   }
+  
+  initJoystick();
+  console.log('ジョイスティック初期化完了');
   
   showRoomSelection();
 });
@@ -471,11 +401,104 @@ document.addEventListener('keydown', function(e) {
   else if (e.key === 'e' || e.key === 'E') rotateFurnitureAtCenter(45);
 });
 
+function initJoystick() {
+  const container = document.getElementById('joystick-container');
+  const stick = document.getElementById('joystick-stick');
+  const base = document.getElementById('joystick-base');
+  
+  if (!container || !stick || !base) return;
+  
+  const maxDistance = 35;
+  
+  function handleStart(e) {
+    joystickActive = true;
+  }
+  
+  function handleMove(e) {
+    if (!joystickActive) return;
+    
+    e.preventDefault();
+    
+    const touch = e.touches ? e.touches[0] : e;
+    const rect = base.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    let deltaX = touch.clientX - centerX;
+    let deltaY = touch.clientY - centerY;
+    
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    
+    if (distance > maxDistance) {
+      const angle = Math.atan2(deltaY, deltaX);
+      deltaX = Math.cos(angle) * maxDistance;
+      deltaY = Math.sin(angle) * maxDistance;
+    }
+    
+    stick.style.left = (35 + deltaX) + 'px';
+    stick.style.top = (35 + deltaY) + 'px';
+    
+    joystickDirection.x = deltaX / maxDistance;
+    joystickDirection.z = deltaY / maxDistance;
+  }
+  
+  function handleEnd() {
+    joystickActive = false;
+    stick.style.left = '35px';
+    stick.style.top = '35px';
+    joystickDirection.x = 0;
+    joystickDirection.z = 0;
+  }
+  
+  stick.addEventListener('touchstart', handleStart);
+  document.addEventListener('touchmove', handleMove);
+  document.addEventListener('touchend', handleEnd);
+  
+  stick.addEventListener('mousedown', handleStart);
+  document.addEventListener('mousemove', handleMove);
+  document.addEventListener('mouseup', handleEnd);
+}
+
+function updateCameraFromJoystick() {
+  if (!joystickActive) return;
+  
+  const camera = document.getElementById('camera');
+  if (!camera) return;
+  
+  const pos = camera.getAttribute('position');
+  const rot = camera.object3D.rotation;
+  
+  const moveSpeed = 0.1;
+  
+  const forward = {
+    x: -Math.sin(rot.y) * joystickDirection.z * moveSpeed,
+    z: -Math.cos(rot.y) * joystickDirection.z * moveSpeed
+  };
+  
+  const strafe = {
+    x: Math.cos(rot.y) * joystickDirection.x * moveSpeed,
+    z: -Math.sin(rot.y) * joystickDirection.x * moveSpeed
+  };
+  
+  pos.x += forward.x + strafe.x;
+  pos.z += forward.z + strafe.z;
+  
+  const halfX = currentRoomBounds.x / 2;
+  const halfZ = currentRoomBounds.z / 2;
+  
+  pos.x = Math.max(-halfX, Math.min(halfX, pos.x));
+  pos.z = Math.max(-halfZ, Math.min(halfZ, pos.z));
+  
+  camera.setAttribute('position', pos);
+}
+
 setInterval(function() {
   let camera = document.querySelector('#camera');
   let pointer = document.querySelector('#pointer');
   
   if (!camera || !pointer) return;
+  
+  updateCameraFromJoystick();
   
   let cameraPos = camera.getAttribute('position');
   let changed = false;
@@ -570,7 +593,6 @@ function loadRoomToScene(roomName) {
   const cameraPos = camera.getAttribute('position');
   camera.setAttribute('position', `${cameraPos.x} ${roomConfig.cameraHeight} ${cameraPos.z}`);
   camera.setAttribute('rotation', '0 0 0');
-  cameraRotation = { yaw: 0, pitch: 0 };
   
   currentRoomBounds = roomConfig.bounds;
   
