@@ -478,8 +478,8 @@ function updateCameraFromJoystick() {
   const moveSpeed = 0.1;
   
   const forward = {
-    x: -Math.sin(rot.y) * joystickDirection.z * moveSpeed,
-    z: -Math.cos(rot.y) * joystickDirection.z * moveSpeed
+    x: Math.sin(rot.y) * joystickDirection.z * moveSpeed,
+    z: Math.cos(rot.y) * joystickDirection.z * moveSpeed
   };
   
   const strafe = {
