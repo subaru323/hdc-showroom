@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>HDC大阪 雰囲気シミュレーション</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <link rel="stylesheet" href="css/atmosphere.css">
+</head>
+<body>
+  <!-- ローディング画面 -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <p>Loading...</p>
+    </div>
+  </div>
+
+  <!-- 部屋選択モーダル -->
+  <div id="room-selection-modal" class="modal" style="display: flex;">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2>部屋を選択してください</h2>
+      </div>
+      <div class="room-selection-grid">
+        <div class="room-card" data-room="standard">
+          <div class="room-preview-simple">
+            <div class="room-icon">🏠</div>
+            <div class="room-size">10m × 10m</div>
+          </div>
+          <div class="room-name">標準の部屋</div>
+          <div class="room-description">一般的な広さのリビング空間</div>
+        </div>
+        <div class="room-card" data-room="wide">
+          <div class="room-preview-simple">
+            <div class="room-icon">🏡</div>
+            <div class="room-size">15m × 15m</div>
+          </div>
+          <div class="room-name">広い部屋</div>
+          <div class="room-description">ゆとりのある大型リビング</div>
+        </div>
+        <div class="room-card" data-room="compact">
+          <div class="room-preview-simple">
+            <div class="room-icon">🏘️</div>
+            <div class="room-size">8m × 8m</div>
+          </div>
+          <div class="room-name">コンパクトな部屋</div>
+          <div class="room-description">効率的な小型空間</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a-scene id="vr-scene" style="display: none;">
+    <a-sky color="#87CEEB"></a-sky>
+    
+    <a-light type="ambient" intensity="0.5"></a-light>
+    <a-light type="directional" intensity="0.8" position="5 6 3"></a-light>
+    
+    <a-camera id="camera" position="0 1.6 5"></a-camera>
+  </a-scene>
+
+  <!-- バーチャルジョイスティック -->
+  <div id="joystick-container">
+    <div id="joystick-base"></div>
+    <div id="joystick-stick"></div>
+  </div>
+
+  <script src="js/atmosphere.js"></script>
+</body>
+</html>

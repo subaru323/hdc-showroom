@@ -489,3 +489,71 @@ body {
     font-size: 36px;
   }
 }
+
+/* シミュレーション選択セクション */
+.simulation-section {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.simulation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.simulation-card {
+  background: white;
+  border-radius: 20px;
+  padding: 50px 30px;
+  text-align: center;
+  text-decoration: none;
+  color: #1d1d1f;
+  transition: all 0.3s;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.simulation-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.simulation-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+}
+
+.simulation-card h3 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #1d1d1f;
+}
+
+.simulation-card p {
+  font-size: 16px;
+  color: #86868b;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .simulation-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  
+  .simulation-card {
+    padding: 40px 25px;
+  }
+  
+  .simulation-icon {
+    font-size: 60px;
+  }
+  
+  .simulation-card h3 {
+    font-size: 24px;
+  }
+}
