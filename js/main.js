@@ -73,36 +73,36 @@ const furnitureConfig = {
   sofa: {
     name: 'ソファ',
     variants: [
-      { id: 'sofa-modern', name: 'モダンソファ', model: 'assets/models/sofa_free_version.glb', scale: '1 1 1', yOffset: 0 },
-      { id: 'sofa-lounge', name: 'ラウンジソファ', model: 'assets/models/jet_set_lounge_sofa.glb', scale: '1 1 1', yOffset: 0 }
+      { id: 'sofa-modern', name: 'モダンソファ', model: 'assets/models/sofa_free_version.glb', scale: '0.8 0.8 0.8', yOffset: 0.5 },
+      { id: 'sofa-lounge', name: 'ラウンジソファ', model: 'assets/models/jet_set_lounge_sofa.glb', scale: '1 1 1', yOffset: 0.5 }
     ]
   },
   table: {
     name: 'テーブル',
     variants: [
-      { id: 'table-dining', name: 'ダイニングテーブル', model: 'assets/models/dining_table.glb', scale: '1 1 1', yOffset: 0 },
-      { id: 'table-round', name: '円形テーブル', model: 'assets/models/round_dining_table.glb', scale: '1 1 1', yOffset: 0 }
+      { id: 'table-dining', name: 'ダイニングテーブル', model: 'assets/models/dining_table.glb', scale: '0.1 0.1 0.1', yOffset: 0 },
+      { id: 'table-round', name: '円形テーブル', model: 'assets/models/round_dining_table.glb', scale: '0.8 0.8 0.8', yOffset: 0 }
     ]
   },
   kitchen: {
     name: 'キッチン',
     variants: [
-      { id: 'kitchen-cabinet', name: 'キッチンキャビネット', model: 'assets/models/kitchen_cabinet.glb', scale: '1 1 1', yOffset: 0 },
-      { id: 'kitchen-modern', name: 'モダンキッチン', model: 'assets/models/modern_kitchen.glb', scale: '1 1 1', yOffset: 0 }
+      { id: 'kitchen-cabinet', name: 'キッチンキャビネット', model: 'assets/models/kitchen_cabinet.glb', scale: '0.5 0.5 0.5', yOffset: 0 },
+      { id: 'kitchen-modern', name: 'モダンキッチン', model: 'assets/models/modern_kitchen.glb', scale: '0.01 0.01 0.01', yOffset: 0 }
     ]
   },
   cabinet: {
     name: '棚',
     variants: [
-      { id: 'cabinet-shelf', name: 'オープンシェルフ', model: 'assets/models/cc0_-_shelf_3.glb', scale: '1 1 1', yOffset: 0 },
-      { id: 'cabinet-storage', name: 'ストレージキャビネット', model: 'assets/models/storage_cabinet_furniture.glb', scale: '1 1 1', yOffset: 0 }
+      { id: 'cabinet-shelf', name: 'オープンシェルフ', model: 'assets/models/cc0_-_shelf_3.glb', scale: '5 5 5', yOffset: 0 },
+      { id: 'cabinet-storage', name: 'ストレージキャビネット', model: 'assets/models/storage_cabinet_furniture.glb', scale: '3 3 3', yOffset: 0 }
     ]
   },
   chair: {
     name: '椅子',
     variants: [
-      { id: 'chair-gaming', name: 'ゲーミングチェア', model: 'assets/models/gaming_chair_free_download.glb', scale: '1 1 1', yOffset: 0 },
-      { id: 'chair-wood', name: 'ウッドチェア', model: 'assets/models/wood_chair.glb', scale: '1 1 1', yOffset: 0 }
+      { id: 'chair-gaming', name: 'ゲーミングチェア', model: 'assets/models/gaming_chair_free_download.glb', scale: '0.005 0.005 0.005', yOffset: 0.005 },
+      { id: 'chair-wood', name: 'ウッドチェア', model: 'assets/models/wood_chair.glb', scale: '0.05 0.05 0.05', yOffset: 0.5 }
     ]
   }
 };
@@ -448,7 +448,7 @@ function initJoystick() {
     stick.style.top = (35 + deltaY) + 'px';
     
     joystickDirection.x = deltaX / maxDistance;
-    joystickDirection.z = deltaY / maxDistance; // 符号変更
+    joystickDirection.z = deltaY / maxDistance;
   }
   
   function handleEnd() {
