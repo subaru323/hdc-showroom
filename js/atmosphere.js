@@ -198,68 +198,57 @@ setInterval(function() {
 function loadRoomToScene(roomName) {
   const scene = document.querySelector('a-scene');
   
-  const oldFloor = document.getElementById('floor');
-  const walls = document.querySelectorAll('a-plane[color="#F5F5F0"]');
-  
-  if (oldFloor) oldFloor.remove();
-  walls.forEach(wall => wall.remove());
+  // 旧いモデルを削除
+  const oldRoom = document.getElementById('room-model');
+  if (oldRoom) oldRoom.remove();
   
   let roomConfig;
-  if (roomName === 'standard') {
-    roomConfig = { size: 10, wallColor: '#F5F5F0', floorColor: '#3A3A3A', cameraHeight: 1.6, bounds: { x: 10, z: 10 } };
-  } else if (roomName === 'wide') {
-    roomConfig = { size: 15, wallColor: '#F0E6D2', floorColor: '#8B6F47', cameraHeight: 1.6, bounds: { x: 15, z: 15 } };
-  } else if (roomName === 'compact') {
-    roomConfig = { size: 8, wallColor: '#FFF8E7', floorColor: '#8B7355', cameraHeight: 1.6, bounds: { x: 8, z: 8 } };
+  if (roomName === 'cgulia') {
+    roomConfig = { 
+      model: 'assets/models/room_cgulia.glb', 
+      scale: '1 1 1', 
+      position: '0 0 0',
+      cameraPos: '0 1.6 3',
+      bounds: { x: 10, z: 10 } 
+    };
+  } else if (roomName === 'cozy') {
+    roomConfig = { 
+      model: 'assets/models/cozy_living_room.glb', 
+      scale: '1 1 1', 
+      position: '0 0 0',
+      cameraPos: '0 1.6 3',
+      bounds: { x: 12, z: 12 } 
+    };
+  } else if (roomName === 'room3') {
+    roomConfig = { 
+      model: 'assets/models/room3.glb', 
+      scale: '1 1 1', 
+      position: '0 0 0',
+      cameraPos: '0 1.6 3',
+      bounds: { x: 10, z: 10 } 
+    };
+  } else if (roomName === 'room4') {
+    roomConfig = { 
+      model: 'assets/models/room4.glb', 
+      scale: '1 1 1', 
+      position: '0 0 0',
+      cameraPos: '0 1.6 3',
+      bounds: { x: 10, z: 10 } 
+    };
   }
   
-  const halfSize = roomConfig.size / 2;
-  const wallHeight = 3;
+  // GLBモデルをロード
+  const roomModel = document.createElement('a-entity');
+  roomModel.setAttribute('id', 'room-model');
+  roomModel.setAttribute('gltf-model', roomConfig.model);
+  roomModel.setAttribute('scale', roomConfig.scale);
+  roomModel.setAttribute('position', roomConfig.position);
+  scene.appendChild(roomModel);
   
-  const newFloor = document.createElement('a-plane');
-  newFloor.setAttribute('rotation', '-90 0 0');
-  newFloor.setAttribute('width', roomConfig.size);
-  newFloor.setAttribute('height', roomConfig.size);
-  newFloor.setAttribute('color', roomConfig.floorColor);
-  newFloor.setAttribute('position', '0 0 0');
-  newFloor.id = 'floor';
-  scene.appendChild(newFloor);
-  
-  const wallFront = document.createElement('a-plane');
-  wallFront.setAttribute('position', `0 ${wallHeight/2} -${halfSize}`);
-  wallFront.setAttribute('rotation', '0 0 0');
-  wallFront.setAttribute('width', roomConfig.size);
-  wallFront.setAttribute('height', wallHeight);
-  wallFront.setAttribute('color', roomConfig.wallColor);
-  scene.appendChild(wallFront);
-  
-  const wallBack = document.createElement('a-plane');
-  wallBack.setAttribute('position', `0 ${wallHeight/2} ${halfSize}`);
-  wallBack.setAttribute('rotation', '0 180 0');
-  wallBack.setAttribute('width', roomConfig.size);
-  wallBack.setAttribute('height', wallHeight);
-  wallBack.setAttribute('color', roomConfig.wallColor);
-  scene.appendChild(wallBack);
-  
-  const wallLeft = document.createElement('a-plane');
-  wallLeft.setAttribute('position', `-${halfSize} ${wallHeight/2} 0`);
-  wallLeft.setAttribute('rotation', '0 90 0');
-  wallLeft.setAttribute('width', roomConfig.size);
-  wallLeft.setAttribute('height', wallHeight);
-  wallLeft.setAttribute('color', roomConfig.wallColor);
-  scene.appendChild(wallLeft);
-  
-  const wallRight = document.createElement('a-plane');
-  wallRight.setAttribute('position', `${halfSize} ${wallHeight/2} 0`);
-  wallRight.setAttribute('rotation', '0 -90 0');
-  wallRight.setAttribute('width', roomConfig.size);
-  wallRight.setAttribute('height', wallHeight);
-  wallRight.setAttribute('color', roomConfig.wallColor);
-  scene.appendChild(wallRight);
-  
+  // カメラ位置設定
   const camera = document.getElementById('camera');
-  const cameraPos = camera.getAttribute('position');
-  camera.setAttribute('position', `${cameraPos.x} ${roomConfig.cameraHeight} ${cameraPos.z}`);
+  const camPos = roomConfig.cameraPos.split(' ');
+  camera.setAttribute('position', `${camPos[0]} ${camPos[1]} ${camPos[2]}`);
   camera.setAttribute('rotation', '0 0 0');
   
   currentRoomBounds = roomConfig.bounds;
