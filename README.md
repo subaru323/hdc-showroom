@@ -8,6 +8,12 @@
 
 **公式サイト**: [HDC大阪](https://hdc.asahi.co.jp/osaka/)
 
+## デモサイト
+🔗 **[https://subaru323.github.io/hdc-showroom/](https://subaru323.github.io/hdc-showroom/)**
+
+- カタログページ: [index.html](https://subaru323.github.io/hdc-showroom/index.html)
+- シミュレーター: [simulator.html](https://subaru323.github.io/hdc-showroom/simulator.html)
+
 ## 機能
 - **カタログページ**: 家具カテゴリ別の閲覧と3Dプレビュー
 - **シミュレーター**: WebVR空間での家具配置体験
