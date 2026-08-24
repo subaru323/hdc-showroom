@@ -11,12 +11,12 @@ const furnitureDatabase = {
     { name: 'ラウンドテーブル', model: 'round_dining_table.glb', description: '会話が弾む円形テーブル' }
   ],
   kitchen: [
-    { name: 'キッチンキャビネット', model: 'kitchen_cabinet.glb', description: '収納力抜群のキッチンキャビネット' },
-    { name: 'モダンキッチン', model: 'modern_kitchen.glb', description: '最新設備を備えたモダンキッチン' }
+    { name: 'キッチンキャビネット（S）', model: 'kitchen_cabinet.glb', description: 'コンパクトなキッチンキャビネット' },
+    { name: 'キッチンキャビネット（L）', model: 'kitchen_cabinet.glb', description: '収納力抜群のラージサイズ' }
   ],
   cabinet: [
-    { name: 'オープンシェルフ', model: 'cc0_-_shelf_3.glb', description: '見せる収納のオープンシェルフ' },
-    { name: 'ストレージキャビネット', model: 'storage_cabinet_furniture.glb', description: '大容量のストレージキャビネット' }
+    { name: 'ストレージキャビネット', model: 'storage_cabinet_furniture.glb', description: '大容量のストレージキャビネット' },
+    { name: 'ストレージキャビネット（L）', model: 'storage_cabinet_furniture.glb', description: 'ゆったり収納できる大型タイプ' }
   ],
   chair: [
     { name: 'ゲーミングチェア', model: 'gaming_chair_free_download.glb', description: '長時間座っても疲れないゲーミングチェア' },

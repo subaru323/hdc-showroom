@@ -87,15 +87,15 @@ const furnitureConfig = {
   kitchen: {
     name: 'キッチン',
     variants: [
-      { id: 'kitchen-cabinet', name: 'キッチンキャビネット', model: 'assets/models/kitchen_cabinet.glb', scale: '0.5 0.5 0.5', yOffset: 0 },
-      { id: 'kitchen-modern', name: 'モダンキッチン', model: 'assets/models/modern_kitchen.glb', scale: '0.01 0.01 0.01', yOffset: 0 }
+      { id: 'kitchen-cabinet', name: 'キッチンキャビネット（S）', model: 'assets/models/kitchen_cabinet.glb', scale: '0.5 0.5 0.5', yOffset: 0 },
+      { id: 'kitchen-cabinet-l', name: 'キッチンキャビネット（L）', model: 'assets/models/kitchen_cabinet.glb', scale: '0.8 0.8 0.8', yOffset: 0 }
     ]
   },
   cabinet: {
     name: '棚',
     variants: [
-      { id: 'cabinet-shelf', name: 'オープンシェルフ', model: 'assets/models/cc0_-_shelf_3.glb', scale: '5 5 5', yOffset: 0 },
-      { id: 'cabinet-storage', name: 'ストレージキャビネット', model: 'assets/models/storage_cabinet_furniture.glb', scale: '3 3 3', yOffset: 0 }
+      { id: 'cabinet-storage', name: 'ストレージキャビネット', model: 'assets/models/storage_cabinet_furniture.glb', scale: '3 3 3', yOffset: 0 },
+      { id: 'cabinet-storage-l', name: 'ストレージキャビネット（L）', model: 'assets/models/storage_cabinet_furniture.glb', scale: '5 5 5', yOffset: 0 }
     ]
   },
   chair: {
@@ -216,13 +216,19 @@ window.addEventListener('load', () => {
     scene.addEventListener('touchstart', selectFurnitureByClick);
     
     // A-Frame読み込み完了でローディング画面を非表示
-    scene.addEventListener('loaded', () => {
+    const hideLoadingScreen = () => {
       const loadingScreen = document.getElementById('loading-screen');
       if (loadingScreen) {
         loadingScreen.style.display = 'none';
       }
       console.log('A-Frame読み込み完了');
-    });
+    };
+
+    if (scene.hasLoaded) {
+      hideLoadingScreen();
+    } else {
+      scene.addEventListener('loaded', hideLoadingScreen);
+    }
   }
   
   initJoystick();

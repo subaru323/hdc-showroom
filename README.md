@@ -9,23 +9,40 @@
 **公式サイト**: [HDC大阪](https://hdc.asahi.co.jp/osaka/)
 
 ## デモサイト
-🔗 **[https://subaru323.github.io/hdc-showroom/](https://subaru323.github.io/hdc-showroom/)**
+🔗 **[https://hdc-showroom.vercel.app](https://hdc-showroom.vercel.app)**
 
-- カタログページ: [index.html](https://subaru323.github.io/hdc-showroom/index.html)
-- シミュレーター: [simulator.html](https://subaru323.github.io/hdc-showroom/simulator.html)
+- カタログページ: [index.html](https://hdc-showroom.vercel.app/index.html)
+- 配置シミュレーション: [simulator.html](https://hdc-showroom.vercel.app/simulator.html)
+- 雰囲気シミュレーション: [atmosphere.html](https://hdc-showroom.vercel.app/atmosphere.html)
 
 ## 機能
 - **カタログページ**: 家具カテゴリ別の閲覧と3Dプレビュー
-- **シミュレーター**: WebVR空間での家具配置体験
+- **配置シミュレーション**: 仮想空間での家具の配置・回転・削除
+- **雰囲気シミュレーション**: 家具付きの部屋モデルで空間の雰囲気を体験
 
 ## 使い方
-1. `index.html` でカタログを閲覧
-2. `simulator.html` で仮想空間体験
+
+### デモサイトで試す
+上記のデモサイトにアクセスするだけで利用できます。
+
+### ローカルで動かす
+GLBモデルの読み込みにはHTTPサーバーが必要なため、`index.html` を直接ブラウザで開いても3Dモデルは表示されません。
+
+```bash
+node server.js
+```
+
+起動後、以下にアクセスしてください。
+- カタログ: http://localhost:8080/
+- 配置シミュレーション: http://localhost:8080/simulator.html
+- 雰囲気シミュレーション: http://localhost:8080/atmosphere.html
 
 ## 技術スタック
 - A-Frame 1.4.0
 - Three.js
 - WebVR
+- Node.js（ローカル開発サーバー）
+- Vercel（ホスティング）
 
 ## 動作環境
 - モダンブラウザ（Chrome, Firefox, Edge推奨）

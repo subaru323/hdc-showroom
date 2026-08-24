@@ -68,13 +68,19 @@ window.addEventListener('load', () => {
   const scene = document.querySelector('a-scene');
   if (scene) {
     // A-Frame読み込み完了でローディング画面を非表示
-    scene.addEventListener('loaded', () => {
+    const hideLoadingScreen = () => {
       const loadingScreen = document.getElementById('loading-screen');
       if (loadingScreen) {
         loadingScreen.style.display = 'none';
       }
       console.log('A-Frame読み込み完了');
-    });
+    };
+
+    if (scene.hasLoaded) {
+      hideLoadingScreen();
+    } else {
+      scene.addEventListener('loaded', hideLoadingScreen);
+    }
   }
   
   initJoystick();
@@ -203,37 +209,29 @@ function loadRoomToScene(roomName) {
   if (oldRoom) oldRoom.remove();
   
   let roomConfig;
-  if (roomName === 'cgulia') {
-    roomConfig = { 
-      model: 'assets/models/room_cgulia.glb', 
-      scale: '1 1 1', 
+  if (roomName === 'base') {
+    roomConfig = {
+      model: 'assets/rooms/empty_room_base.glb',
+      scale: '1 1 1',
       position: '0 0 0',
       cameraPos: '0 1.6 3',
-      bounds: { x: 10, z: 10 } 
+      bounds: { x: 10, z: 10 }
     };
-  } else if (roomName === 'cozy') {
-    roomConfig = { 
-      model: 'assets/models/cozy_living_room.glb', 
-      scale: '1 1 1', 
+  } else if (roomName === 'free') {
+    roomConfig = {
+      model: 'assets/rooms/free_empty_room.glb',
+      scale: '1 1 1',
       position: '0 0 0',
       cameraPos: '0 1.6 3',
-      bounds: { x: 12, z: 12 } 
+      bounds: { x: 12, z: 12 }
     };
-  } else if (roomName === 'room3') {
-    roomConfig = { 
-      model: 'assets/models/room3.glb', 
-      scale: '1 1 1', 
+  } else if (roomName === 'big') {
+    roomConfig = {
+      model: 'assets/rooms/nice_big_empty_room.glb',
+      scale: '1 1 1',
       position: '0 0 0',
-      cameraPos: '0 1.6 3',
-      bounds: { x: 10, z: 10 } 
-    };
-  } else if (roomName === 'room4') {
-    roomConfig = { 
-      model: 'assets/models/room4.glb', 
-      scale: '1 1 1', 
-      position: '0 0 0',
-      cameraPos: '0 1.6 3',
-      bounds: { x: 10, z: 10 } 
+      cameraPos: '0 1.6 5',
+      bounds: { x: 15, z: 15 }
     };
   }
   
